@@ -13,7 +13,10 @@
           class="panel-toggle"
           >
           {{ panelHeader }}
-          <i class="fa fa-chevron-down" />
+          <span
+            class="toggle-sign"
+            v-html="toggled ? escapedColapsedIcon : escapedColapseIcon">
+          </span>
         </a>
       </div>
 
@@ -64,20 +67,22 @@
                   class="selectable-option"
                   >
                   <label
-                    :for="option.value"
+                    :for="dropId + '-' + option.value"
                     class="simple-label"
                     >
                     <input
-                      :id="option.value"
+                      :id="dropId + '-' + option.value"
                       :type="multiple ? 'checkbox' : 'radio'"
                       :disabled="option.disabled"
-                      :checked="value.indexOf(option.value) > -1"
+                      :checked="multiple ? value.indexOf(option.value) > -1 :
+                        value === option.value"
                       @change="select($event, option.value)"
                       >
-                    <i
+                    <span
                       v-if="option.icon"
-                      :class="['fa', 'pos-rel', option.icon]"
-                      />{{ option.text }}
+                      class="icon-container"
+                      v-html="escapeTextSafe(option.icon)">
+                    </span>{{ option.text }}
                     <span
                       v-if="option.count !== undefined"
                       class="pull-right p-0 text-note"
@@ -147,20 +152,22 @@
                 class="letter-item"
                 >
                 <label
-                  :for="'popup-item-' + item.value"
+                  :for="dropId + '-popup-item-' + item.value"
                   class="simple-label"
                   >
                   <input
-                    :id="'popup-item-' + item.value"
+                    :id="dropId + '-popup-item-' + item.value"
                     :type="multiple ? 'checkbox' : 'radio'"
                     :disabled="item.disabled"
-                    :checked="popupSelected.indexOf(item.value) > -1"
+                    :checked="multiple ? popupSelected.indexOf(item.value) > -1 :
+                      popupSelected === item.value"
                     @change="selectFromPopup($event, item.value)"
                     >
-                  <i
+                  <span
                     v-if="item.icon"
-                    :class="['fa', 'pos-rel', item.icon]"
-                    />{{ item.text }}
+                    class="icon-container"
+                    v-html="escapeTextSafe(item.icon)">
+                  </span>{{ item.text }}
                   <span
                     v-if="item.count !== undefined"
                     class="text-note"
@@ -192,10 +199,6 @@
 </template>
 
 <style scoped lang="less">
-.fa.pos-rel {
-  position: relative;
-  top: 0;
-}
 
 input[type="checkbox"],
 input[type="radio"] {
@@ -257,22 +260,9 @@ input[type="radio"] {
       text-decoration: none;
       text-align: left;
 
-      &.collapsed {
-        i:before {
-          font-family: FontAwesome;
-          content: '\F054';
-        }
-      }
-
-      i {
-        margin-top: 0;
+      .toggle-sign {
         float: right;
         color: #516373;
-
-        &:before {
-          font-family: FontAwesome;
-          content: '\F078';
-        }
       }
     }
 
@@ -355,7 +345,9 @@ input[type="radio"] {
 .open {
   display: block;
 }
-
+.icon-container > :first-child {
+  margin-right: 5px;
+}
 .popup-header {
   border-bottom: 1px solid #C4CDD5;
   padding: 10px 20px;
@@ -417,6 +409,9 @@ input[type="radio"] {
 .popup-footer {
   border-top: 1px solid #C4CDD5;
   padding: 10px 20px;
+}
+.btn + .btn {
+  margin-left: 20px;
 }
 </style>
 
@@ -500,7 +495,15 @@ input[type="radio"] {
 </style>
 
 <script type="text/javascript">
+
 const sorter = new Intl.Collator('en', { sensitivity: 'base', numeric: true });
+
+const safeTags = ['b', 'i', 'em', 'strong'];
+function escapeHtml(str) {
+  const div = document.createElement('div');
+  div.appendChild(document.createTextNode(str));
+  return div.innerHTML;
+}
 
 export default {
   inheritAttrs: false,
@@ -541,11 +544,11 @@ export default {
     },
     texts: {
       default: () => ({
-        placeholder: 'Nothing selected',
         searchText: 'Search',
         empty: 'No results',
-        selectNone: 'Select none',
         showMore: 'Show more',
+        collapsedIcon: '-',
+        collapseIcon: '+',
       }),
       type: Object,
     },
@@ -577,8 +580,11 @@ export default {
     };
   },
   computed: {
-    values() {
-      return Object.values(this.selected).map((o) => (o.icon ? `<i class="fa ${o.icon}"></i> ${o.text}` : o.text));
+    escapedColapsedIcon() {
+      return this.escapeTextSafe(this.texts.collapsedIcon);
+    },
+    escapedColapseIcon() {
+      return this.escapeTextSafe(this.texts.collapseIcon);
     },
     optionsMap() {
       // For the optionsMap, use all options, not just the filtered ones
@@ -700,6 +706,15 @@ export default {
     });
   },
   methods: {
+    escapeTextSafe(nonEscapedText) {
+      let text = escapeHtml(nonEscapedText);
+      text = text.replace(/&lt;br(\s\/)?&gt;/ig, '<br>');
+      safeTags.forEach((t) => {
+        text = text.replace(new RegExp(`&lt;${t}( class=".*")?&gt;`, 'ig'), `<${t}$1>`);
+        text = text.replace(new RegExp(`&lt;/${t}&gt;`, 'ig'), `</${t}>`);
+      });
+      return text;
+    },
     sortSelectedFirstFunction(a, b) {
       if (!this.sortSelectedFirst) {
         return 0;

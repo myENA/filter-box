@@ -13,6 +13,22 @@
         :sort-selected-first="true"
         :display-max="15"
         />
+        <h3>Selected values: {{ selectedOptions }}</h3>
+    </div>
+    <div class="w-25">
+      <filter-box
+        v-model="selectedOptions2"
+        drop-id="second"
+        :options="options"
+        :search="true"
+        :multiple="false"
+        :is-expanded="true"
+        panel-header="Second Options"
+        :texts="optionsTexts"
+        :sort-selected-first="false"
+        :display-max="10"
+        />
+        <h3>Selected value: {{ selectedOptions2 }}</h3>
     </div>
   </div>
 </template>
@@ -31,16 +47,21 @@ export default {
         showMore: 'Show more options',
         searchText: 'Search for options...',
         empty: 'No results',
+        collapsedIcon: '<i class="fa fa-chevron-right"></i>',
+        collapseIcon: '<i class="fa fa-chevron-down"></i>',
       },
       selectedOptions: [],
+      selectedOptions2: '',
       options: [{
         text: 'Option 1',
         value: 'option1',
         count: 12,
+        icon: '<i class="fa fa-trash"></i>',
       }, {
         text: 'Option 2',
         value: 'option2',
         count: 65,
+        icon: '<b>+</b>',
       }, {
         text: 'Option 3',
         value: 'option3',
@@ -49,6 +70,7 @@ export default {
         text: 'A Option 1',
         value: 'aoption1',
         count: 65,
+        icon: '<i class="fa fa-laptop"></i>',
       }, {
         text: 'A Option 2',
         value: 'aoption2',
@@ -131,6 +153,11 @@ body {
   padding: 20px;
 }
 
+#app {
+  float: left;
+  width: 100%;
+}
+
 a {
   color: #0098C8;
   text-decoration: none;
@@ -139,6 +166,7 @@ a {
 .w-25 {
   width: 25%;
   float: left;
+  margin-right: 1%;
 }
 ::-webkit-scrollbar-thumb {
   border-radius: 4px;
