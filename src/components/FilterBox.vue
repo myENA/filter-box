@@ -34,7 +34,7 @@
               <input
                 v-model="filter"
                 class="form-control"
-                :placeholder="texts.searchText"
+                :placeholder="mergedTexts.searchText"
                 autofocus="autofocus"
                 >
             </div>
@@ -44,7 +44,7 @@
               :class="$style.empty"
               class="text-muted"
               >
-              {{ texts.empty }}
+              {{ mergedTexts.empty }}
             </span>
 
             <ul
@@ -96,7 +96,7 @@
               href="#"
               class="showMoreLink"
               @click.prevent.stop="togglePopup"
-              >{{ texts.showMore }} ({{ linearOptions.length }})</a>
+              >{{ mergedTexts.showMore }} ({{ linearOptions.length }})</a>
           </div>
         </div>
       </div>
@@ -125,7 +125,7 @@
           <input
             v-model="filter"
             class="form-control"
-            :placeholder="texts.searchText"
+            :placeholder="mergedTexts.searchText"
             autofocus="autofocus"
             >
         </div>
@@ -134,7 +134,7 @@
           :class="$style.empty"
           class="text-muted"
           >
-          {{ texts.empty }}
+          {{ mergedTexts.empty }}
         </span>
         <div
           v-else
@@ -543,13 +543,7 @@ export default {
       type: Array,
     },
     texts: {
-      default: () => ({
-        searchText: 'Search',
-        empty: 'No results',
-        showMore: 'Show more',
-        collapsedIcon: '-',
-        collapseIcon: '+',
-      }),
+      default: () => ({}),
       type: Object,
     },
     panelHeader: {
@@ -580,11 +574,21 @@ export default {
     };
   },
   computed: {
+    mergedTexts() {
+      return {
+        searchText: 'Search',
+        empty: 'No results',
+        showMore: 'Show more',
+        collapsedIcon: '-',
+        collapseIcon: '+',
+        ...this.texts,
+      };
+    },
     escapedColapsedIcon() {
-      return this.escapeTextSafe(this.texts.collapsedIcon);
+      return this.escapeTextSafe(this.mergedTexts.collapsedIcon);
     },
     escapedColapseIcon() {
-      return this.escapeTextSafe(this.texts.collapseIcon);
+      return this.escapeTextSafe(this.mergedTexts.collapseIcon);
     },
     optionsMap() {
       // For the optionsMap, use all options, not just the filtered ones
@@ -685,7 +689,7 @@ export default {
   mounted() {
     document.addEventListener('click', (event) => {
       // If user clicks inside the element, do nothing
-      if (event.target.closest('.big-popup')) return;
+      if (event.target.closest('.filter-box-container')) return;
 
       // If user clicks outside the element, hide it!
       this.closePopup();
