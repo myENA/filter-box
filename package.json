@@ -1,13 +1,26 @@
 {
-  "name": "filter-box",
+  "name": "@myena/filter-box",
+  "description": "Filter box used in ENA projects",
+  "libname": "MyEna",
   "version": "0.1.0",
+  "repository": "github:myENA/filter-box",
   "license": "MIT",
+  "keywords": [
+    "vue",
+    "select"
+  ],
+  "author": "Daniel Andoni <dandoni@ena.com>",
   "scripts": {
     "serve": "vue-cli-service serve --host localhost",
     "build": "vue-cli-service build",
     "test:unit": "vue-cli-service test:unit",
     "lint": "vue-cli-service lint"
   },
+  "main": "dist/index.js",
+  "files": [
+    "dist/*",
+    "src/components/*"
+  ],
   "dependencies": {
     "core-js": "^3.6.4",
     "vue": "^2.6.11"
@@ -25,7 +38,6 @@
     "eslint-plugin-vue": "^6.2.2",
     "less": "^3.0.4",
     "less-loader": "^5.0.0",
-    "font-awesome": "^4.7.0",
     "vue-template-compiler": "^2.6.11"
   }
 }
