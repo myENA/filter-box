@@ -12,9 +12,11 @@
   "author": "Daniel Andoni <dandoni@ena.com>",
   "scripts": {
     "serve": "vue-cli-service serve --host localhost",
-    "build": "vue-cli-service build",
+    "build": "vue-cli-service build --target lib --name MyEnaFilterBox",
     "test:unit": "vue-cli-service test:unit",
-    "lint": "vue-cli-service lint"
+    "lint": "vue-cli-service lint",
+    "preversion": "npm run test:unit && npm run build && git add -A dist",
+    "postversion": "git push && git push --tags && echo Run: \"npm publish\""
   },
   "main": "dist/index.js",
   "files": [
