@@ -1,6 +1,9 @@
 <template>
-  <div id="app">
+  <main role="main" id="app">
+    <h1>Filter box examples</h1>
+
     <div class="w-25">
+      <h2>Multiple select</h2>
       <filter-box
         v-model="selectedOptions"
         drop-id="first"
@@ -16,6 +19,7 @@
         <h3>Selected values: {{ selectedOptions }}</h3>
     </div>
     <div class="w-25">
+      <h2>Single select</h2>
       <filter-box
         v-model="selectedOptions2"
         drop-id="second"
@@ -30,7 +34,7 @@
         />
         <h3>Selected value: {{ selectedOptions2 }}</h3>
     </div>
-  </div>
+  </main>
 </template>
 
 <script>

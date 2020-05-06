@@ -36,6 +36,7 @@
                 class="form-control"
                 :placeholder="mergedTexts.searchText"
                 autofocus="autofocus"
+                aria-label="search"
                 >
             </div>
 
@@ -127,6 +128,7 @@
             class="form-control"
             :placeholder="mergedTexts.searchText"
             autofocus="autofocus"
+            aria-label="search"
             >
         </div>
         <span
@@ -144,7 +146,7 @@
             v-for="key in Object.keys(groupedOptions)"
             :key="key"
             >
-            <h4>{{ key }}</h4>
+            <h3 class="group-heading">{{ key }}</h3>
             <div class="letter-elements">
               <div
                 v-for="item in groupedOptions[key]"
@@ -387,6 +389,13 @@ input[type="radio"] {
     max-height: 350px;
     overflow-y: auto;
     padding-left: 20px;
+
+    h3.group-heading {
+      font-size: 18px;
+      font-weight: 400;
+      line-height: 20px;
+      color: #263238;
+    }
   }
 
   .letter-elements {
