@@ -28,7 +28,7 @@
         <div class="panel-body">
           <div>
             <div
-              v-if="search"
+              v-if="search && options.length > 0"
               class="search-box"
               >
               <input
@@ -40,8 +40,15 @@
                 >
             </div>
 
+            <p
+              v-if="options.length === 0"
+              class="no-options-text"
+              >
+              {{ mergedTexts.placeholder }}
+            </p>
+
             <span
-              v-if="emptyResults"
+              v-if="emptyResults && options.length > 0"
               :class="$style.empty"
               class="text-muted"
               >
@@ -590,6 +597,7 @@ export default {
         showMore: 'Show more',
         collapsedIcon: '-',
         collapseIcon: '+',
+        placeholder: 'No options to display',
         ...this.texts,
       };
     },
@@ -686,7 +694,7 @@ export default {
           // Set height if expanded by default
           const content = this.$refs['panel-body'];
           if (this.isExpanded && content) {
-            content.style.maxHeight = `${content.scrollHeight}px`;
+            content.style.maxHeight = `${Math.max(content.scrollHeight, 250)}px`;
           }
         });
       },
@@ -713,7 +721,7 @@ export default {
         content.style.maxHeight = null;
         this.toggled = true;
       } else {
-        content.style.maxHeight = `${content.scrollHeight}px`;
+        content.style.maxHeight = `${Math.max(content.scrollHeight, 250)}px`;
         this.toggled = false;
       }
     });
