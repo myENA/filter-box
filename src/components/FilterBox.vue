@@ -69,6 +69,7 @@
                   active: !multiple && !!selected[option.value],
                   disabled: option.disabled,
                   'has-header': !!option.parentHeader,
+                  'simple-option': !multiple,
                 }"
                 >
                 <span
@@ -77,6 +78,7 @@
                   <label
                     :for="dropId + '-' + option.value"
                     class="simple-label"
+                    :class="{'disabled': option.disabled}"
                     >
                     <input
                       :id="dropId + '-' + option.value"
@@ -85,16 +87,24 @@
                       :checked="multiple ? value.indexOf(option.value) > -1 :
                         value === option.value"
                       @change="select($event, option.value)"
+                      @click="click($event, option.value)"
                       >
                     <span
                       v-if="option.icon"
                       class="icon-container"
                       v-html="escapeTextSafe(option.icon)">
                     </span>{{ option.text }}
-                    <span
-                      v-if="option.count !== undefined"
-                      class="pull-right p-0 text-note"
-                      >({{ option.count }})</span>
+                    <span class="pull-right pr-0">
+                      <span
+                        v-if="option.count !== undefined"
+                        class="text-note p-0"
+                        >({{ option.count }})</span>
+                      <span
+                        class="checked"
+                        v-if="!multiple && value === option.value">
+                        &#10004;
+                      </span>
+                    </span>
                   </label>
                 </span>
               </li>
@@ -159,10 +169,15 @@
                 v-for="item in groupedOptions[key]"
                 :key="item.value"
                 class="letter-item"
+                :class="{
+                  'simple-option': !multiple,
+                  'active': !multiple && popupSelected.indexOf(item.value) > -1,
+                  }"
                 >
                 <label
                   :for="dropId + '-popup-item-' + item.value"
                   class="simple-label"
+                  :class="{'disabled': item.disabled}"
                   >
                   <input
                     :id="dropId + '-popup-item-' + item.value"
@@ -170,6 +185,7 @@
                     :disabled="item.disabled"
                     :checked="multiple ? popupSelected.indexOf(item.value) > -1 :
                       popupSelected === item.value"
+                    @click="click($event, item.value)"
                     @change="selectFromPopup($event, item.value)"
                     >
                   <span
@@ -181,6 +197,11 @@
                     v-if="item.count !== undefined"
                     class="text-note"
                     >({{ item.count }})</span>
+                  <span
+                    class="checked pull-right"
+                    v-if="!multiple && popupSelected === item.value">
+                    &#10004;
+                  </span>
                 </label>
               </div>
             </div>
@@ -225,6 +246,32 @@ input[type="radio"] {
   cursor: pointer;
   font-size: 14px;
   line-height: 26px;
+
+  input[type='radio'] {
+    display: none;
+  }
+
+  &.disabled {
+    color: #C4CDD5;
+    cursor: default;
+
+    .text-note {
+      color: #C4CDD5;
+    }
+  }
+}
+.simple-option {
+  padding-left: 10px;
+  padding-right: 10px;
+  border-left: 3px solid transparent;
+
+  &:hover {
+    background-color: #E8F8FF;
+  }
+  &.active {
+    background-color: #E8F8FF;
+    border-left: 3px solid #019FE1;
+  }
 }
 
 .selectable-option {
@@ -325,6 +372,15 @@ input[type="radio"] {
 .p-0 {
   padding: 0;
   line-height: normal;
+}
+.pr-0 {
+  padding: 0;
+  line-height: 26px;
+}
+
+.checked {
+  font-weight: bolder;
+  padding: 0;
 }
 
 .text-note {
@@ -759,6 +815,14 @@ export default {
     textMatch(text) {
       return text ? text.match(this.filterRegExp) !== null : true;
     },
+    click(e) {
+      if (!this.multiple) {
+        if (e.target.checked) {
+          this.popupSelected = '';
+          this.myValue = '';
+        }
+      }
+    },
     select(e, val) {
       e.preventDefault();
       if (this.optionsMap[val].disabled) {
@@ -808,7 +872,11 @@ export default {
       }
     },
     selectNone() {
-      this.myValue = [];
+      if (this.multiple) {
+        this.myValue = [];
+      } else {
+        this.myValue = '';
+      }
     },
     togglePopup() {
       this.isOpen = !this.isOpen;
