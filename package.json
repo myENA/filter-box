@@ -2,7 +2,7 @@
   "name": "@myena/filter-box",
   "description": "Filter box used in ENA projects",
   "libname": "MyEna",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "repository": "github:myENA/filter-box",
   "license": "MIT",
   "keywords": [
