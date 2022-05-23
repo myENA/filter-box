@@ -755,6 +755,12 @@ export default {
         });
       },
     },
+    isExpanded: {
+      immediate: true,
+      handler() {
+        this.toggled = !this.isExpanded;
+      },
+    },
     filter() {
       this.$emit('filter', this.filter);
     },
